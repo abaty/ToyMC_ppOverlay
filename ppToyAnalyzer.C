@@ -35,7 +35,26 @@ void ppToyAnalyzer(){
     if(n==100) break;
   }
   centBoundaries->SetBinContent(1,99999);
-  centV.push_back(999999);
+  while(centV.size()<101) centV.push_back(999999);
 
+  for(unsigned int i = 0; i<centV.size(); i++) std::cout << centV.at(i) << std::endl;
 
+  TH1F * spectraNum[nCentBins];
+  TH1F * spectraDen = (TH1F*)f->Get("MBRecoPtSpectrum");
+  TH1F * RAA[nCentBins];
+  for(int i = 0; i<nCentBins; i++){
+    spectraNum[i] = (TH1F*)spectraDen->Clone(Form("spectraNum_%d_%d",s.centBins[i],s.centBins[i+1]));
+    spectraNum[i]->Reset(); 
+ 
+    for(int x = 0; x<HFvsPt->GetXaxis()->GetNbins(); x++){
+      for(int y = 0; y<HFvsPt->GetYaxis()->GetNbins(); y++){
+        if(HFvsPt->GetYaxis()->GetBinCenter(y) < centV.at(s.centBins[i])) continue;
+        if(HFvsPt->GetYaxis()->GetBinCenter(y) >= centV.at(s.centBins[i+1])) continue;
+        spectraNum[i]->SetBinContent(x,spectraNum[i]->GetBinContent(x)+HFvsPt->GetBinContent(x,y));
+        spectraNum[i]->SetBinError(x,TMath::Power(TMath::Power(spectraNum[i]->GetBinError(x),2)+TMath::Power(HFvsPt->GetBinContent(x,y),2),0.5);
+      }
+    } 
+    
+  }
+  TH1F * avgNColl = new TH1F("avgNColl","avgNColl",100,0,100);
 }
