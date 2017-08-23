@@ -40,9 +40,9 @@ void ppToy(int job, int nJobs, std::vector< std::string > inputList){
   std::string varList = "nColl:recoHF:recoTrk:weight:job:evtID"; 
   TNtuple * ntuple = new TNtuple("ntuple","ntuple",varList.c_str());
   TH1F * MBPtPlot = new TH1F("MBRecoPtSpectrum","MBRecoPtSpectrum",s.ptBins,s.ptBinsArr);
-  TH2F * HFvsPt = new TH2F("HFvsPt","HFvsPt",s.ptBins,s.ptBinsArr,s.nHFBins,0,s.nHFBins/10);
-  TH2I * HFvsNColl = new TH2I("HFvsNColl","HFvsNColl",250,0,250,s.nHFBins,0,s.nHFBins/10);
-  TH1F * HFvsnEvt = new TH1F("HFvsnEvt","HFvsnEvt",s.nHFBins,0,s.nHFBins/10);
+  TH2F * HFvsPt = new TH2F("HFvsPt","HFvsPt",s.ptBins,s.ptBinsArr,s.nHFBins,0,s.nHFBins);
+  TH2I * HFvsNColl = new TH2I("HFvsNColl","HFvsNColl",250,0,250,s.nHFBins,0,s.nHFBins);
+  TH1F * HFvsnEvt = new TH1F("HFvsnEvt","HFvsnEvt",s.nHFBins,0,s.nHFBins);
   TH1F * evtSpectrum = new TH1F("evtSpectrum","evtSpectrum",s.ptBins,s.ptBinsArr);
 
   //calculate MB spectrum first by iteself
