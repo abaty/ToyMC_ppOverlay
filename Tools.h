@@ -19,4 +19,10 @@ float getHFSum(Branches b, float lowEtaCut = 3, float highEtaCut = 5){
   return HF;
 }
 
+float getAvgNCollGlauber(int hiBinLow, int hiBinHigh){
+  float avg = 0;
+  for(int i = hiBinLow; i<hiBinHigh; i++) avg += findNcoll(i)/(float)(hiBinHigh-hiBinLow);
+  return avg;
+}
+
 #endif

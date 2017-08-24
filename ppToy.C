@@ -84,7 +84,7 @@ void ppToy(int job, int nJobs, std::vector< std::string > inputList){
     float nCollExact = findNcoll(rand()%200);
     int nColl = (int)nCollExact;
     float weight = -1;
-    if((rand()%100) < (nCollExact-nColl)*100) nColl++;//randomly add 1 to nColl to match fractional average nColl values
+    if((rand()%1000) < (nCollExact-nColl)*1000) nColl++;//randomly add 1 to nColl to match fractional average nColl values
     if(rand()%nColl != 0) continue;//generate events w/ frequency 1/nColl but weight them by nColl (should prefer generating peripheral evts) 
     else weight = nColl;  
       

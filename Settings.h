@@ -19,8 +19,10 @@ class Settings {
   bool doTimeSeed = false;
 
   //analyzer
-  static const int nCentBins = 7;
-  const int centBins[nCentBins+1] = {0,50,60,70,80,90,95,100};
+  static const int nCentBins = 14;
+  const int centBinsLow[nCentBins] = {0,50,60,70,80,90,95,70,50,30,10,5,0,0};
+  const int centBinsHigh[nCentBins] = {50,60,70,80,90,95,100,90,70,50,30,10,5,100};
+  bool isMC = true;
 
   Settings();
   
