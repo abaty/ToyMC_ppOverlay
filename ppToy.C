@@ -39,14 +39,14 @@ void ppToy(int job, int nJobs, std::vector< std::string > inputList){
   TFile * outF = TFile::Open(Form("output_%d.root",job),"recreate"); 
   std::string varList = "nColl:recoHF:recoTrk:weight:job:evtID"; 
   TNtuple * ntuple = new TNtuple("ntuple","ntuple",varList.c_str());
+  TH1F * nMBEvt = new TH1F("nMBEvt","nMBEvt",1,0,1);
   TH1F * MBPtPlot = new TH1F("MBRecoPtSpectrum","MBRecoPtSpectrum",s.ptBins,s.ptBinsArr);
   TH2F * HFvsPt = new TH2F("HFvsPt","HFvsPt",s.ptBins,s.ptBinsArr,s.nHFBins,0,s.nHFBins);
-  TH2I * HFvsNColl = new TH2I("HFvsNColl","HFvsNColl",250,0,250,s.nHFBins,0,s.nHFBins);
+  TH2I * HFvsNColl = new TH2I("HFvsNColl","HFvsNColl",2000,0,2000,s.nHFBins,0,s.nHFBins);
   TH1F * HFvsnEvt = new TH1F("HFvsnEvt","HFvsnEvt",s.nHFBins,0,s.nHFBins);
   TH1F * evtSpectrum = new TH1F("evtSpectrum","evtSpectrum",s.ptBins,s.ptBinsArr);
 
   //calculate MB spectrum first by iteself
-  float nEvt = 0;
   for(unsigned int file = 0; file < inputList.size(); file++){
     std::cout << inputList.at(file).c_str() << std::endl;
     TFile * fin = TFile::Open(inputList.at(file).c_str(),"READ");
@@ -58,13 +58,13 @@ void ppToy(int job, int nJobs, std::vector< std::string > inputList){
     for(int i = 0; i<trk->GetEntries(); i++){
       trk->GetEntry(i);
       if(i%1000==0) std::cout << i << " " << trk->GetEntries() << std::endl;
-      nEvt++;
+      nMBEvt->Fill(0.5);
       for(int t = 0; t<b.nTrk; t++)  MBPtPlot->Fill((b.trkPt)[t]);
     }
     fin->Close();
   }
   outF->cd();
-  MBPtPlot->Scale(1./nEvt);
+  nMBEvt->Write();
   MBPtPlot->Write();
   
   int nEvtsMade = 0;
@@ -121,7 +121,7 @@ void ppToy(int job, int nJobs, std::vector< std::string > inputList){
     ntuple->Fill((float)nColl,(float)totalHF,(float)totalTrk,(float)weight,(float) job,(float)nEvtsMade);
     
     for(int i = 1; i<evtSpectrum->GetSize()-1; i++){
-      HFvsPt->Fill(evtSpectrum->GetBinCenter(i),totalHF,weight*evtSpectrum->GetBinContent(i));    
+      HFvsPt->Fill(evtSpectrum->GetBinCenter(i),totalHF,evtSpectrum->GetBinContent(i));    
     }
     HFvsNColl->Fill(nColl,totalHF,weight);
     HFvsnEvt->Fill(totalHF,weight);

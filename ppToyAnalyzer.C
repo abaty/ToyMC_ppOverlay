@@ -22,8 +22,6 @@ void ppToyAnalyzer(){
   std::cout << 100 << "% " << 0 << std::endl;
   int sum = 0;
   float netSum = HFvsnEvt->Integral(0,s.nHFBins+1);
-  
-
   for(int i = 1; i<HFvsnEvt->GetSize(); i++){
     sum += HFvsnEvt->GetBinContent(i);
     if(sum/netSum>0.01*n){
@@ -36,25 +34,48 @@ void ppToyAnalyzer(){
   }
   centBoundaries->SetBinContent(1,99999);
   while(centV.size()<101) centV.push_back(999999);
+  std::reverse(centV.begin(),centV.end());
+  for(unsigned int i = 0; i<centV.size(); i++) std::cout << i << " " << centV.at(i) << std::endl;
 
-  for(unsigned int i = 0; i<centV.size(); i++) std::cout << centV.at(i) << std::endl;
-
-  TH1F * spectraNum[nCentBins];
+  TFile * out = TFile::Open("out.root","recreate");
+  TH1F * spectraNum[s.nCentBins];
   TH1F * spectraDen = (TH1F*)f->Get("MBRecoPtSpectrum");
-  TH1F * RAA[nCentBins];
-  for(int i = 0; i<nCentBins; i++){
+  TH1F * averageNColl = new TH1F("averageNColl","averageNColl",100,0,100);
+  TH1F * nMBEvt = (TH1F*)f->Get("nMBEvt");
+  spectraDen->Scale(1/(float)nMBEvt->GetBinContent(1));
+  spectraDen->SetDirectory(out);
+  spectraDen->Write();
+  
+  TH1F * RAA[s.nCentBins];
+  for(int i = 0; i<s.nCentBins; i++){
     spectraNum[i] = (TH1F*)spectraDen->Clone(Form("spectraNum_%d_%d",s.centBins[i],s.centBins[i+1]));
-    spectraNum[i]->Reset(); 
- 
-    for(int x = 0; x<HFvsPt->GetXaxis()->GetNbins(); x++){
-      for(int y = 0; y<HFvsPt->GetYaxis()->GetNbins(); y++){
-        if(HFvsPt->GetYaxis()->GetBinCenter(y) < centV.at(s.centBins[i])) continue;
-        if(HFvsPt->GetYaxis()->GetBinCenter(y) >= centV.at(s.centBins[i+1])) continue;
+    spectraNum[i]->Reset();
+    int n_MB = 0; 
+    float nColl = 0;
+    for(int y = 1; y<HFvsPt->GetYaxis()->GetNbins()+1; y++){
+      if(HFvsPt->GetYaxis()->GetBinCenter(y) >= centV.at(s.centBins[i])) continue;
+      if(HFvsPt->GetYaxis()->GetBinCenter(y) < centV.at(s.centBins[i+1])) continue;
+      n_MB += HFvsnEvt->GetBinContent(y);
+      for(int x = 1; x<HFvsPt->GetXaxis()->GetNbins()+1; x++){
         spectraNum[i]->SetBinContent(x,spectraNum[i]->GetBinContent(x)+HFvsPt->GetBinContent(x,y));
-        spectraNum[i]->SetBinError(x,TMath::Power(TMath::Power(spectraNum[i]->GetBinError(x),2)+TMath::Power(HFvsPt->GetBinContent(x,y),2),0.5);
+        spectraNum[i]->SetBinError(x,TMath::Power(TMath::Power(spectraNum[i]->GetBinError(x),2)+TMath::Power(HFvsPt->GetBinContent(x,y),2),0.5));
       }
-    } 
-    
+      //calculate average nColl
+      for(int x = 1; x<HFvsNColl->GetXaxis()->GetNbins()+1; x++){
+        nColl += HFvsNColl->GetBinContent(x,y)*x;
+      }
+    }
+    spectraNum[i]->Scale(1/(float)n_MB);//divide by 1/MB
+    float avgNColl = nColl/(float)n_MB;
+    averageNColl->Fill(i,avgNColl);
+    std::cout << "N_MB: " << n_MB << " avgNColl " << avgNColl << std::endl;
+    spectraNum[i]->Write();
+
+    RAA[i] = (TH1F*)spectraNum[i]->Clone(Form("RAA_%d_%d",s.centBins[i],s.centBins[i+1]));
+    RAA[i]->Divide(spectraDen);
+    RAA[i]->Scale(1/avgNColl); 
+    RAA[i]->Write(); 
   }
-  TH1F * avgNColl = new TH1F("avgNColl","avgNColl",100,0,100);
+  averageNColl->Write();
+  out->Close();
 }
