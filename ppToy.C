@@ -16,13 +16,13 @@
 #include "Settings.h"
 #include "Branches.h"
 
-void setTrees(TFile * f, TTree ** trk, TTree ** pf, TTree ** gen, TTree ** jet){
+void setTrees(Settings s, TFile * f, TTree ** trk, TTree ** pf, TTree ** gen, TTree ** jet){
   *trk = (TTree*) f->Get("ppTrack/trackTree");
   *pf  = (TTree*) f->Get("pfcandAnalyzer/pfTree");
-  *gen = (TTree*) f->Get("HiGenParticleAna/hi");
+  if(s.isMC)  *gen = (TTree*) f->Get("HiGenParticleAna/hi");
   *jet = (TTree*) f->Get("ak4PFJetAnalyzer/t");
   (*trk)->AddFriend(*pf);
-  (*trk)->AddFriend(*gen);
+  if(s.isMC)  (*trk)->AddFriend(*gen);
   (*trk)->AddFriend(*jet);
 }
 
@@ -52,8 +52,8 @@ void ppToy(int job, int nJobs, std::vector< std::string > inputList){
     TFile * fin = TFile::Open(inputList.at(file).c_str(),"READ");
     std::cout << "file: " << file << std::endl;
     TTree *trk, *pf, *gen, *jet;
-    setTrees(fin, &trk, &pf, &gen, &jet);
-    b.SetBranches(trk, pf, gen, jet);
+    setTrees(s, fin, &trk, &pf, &gen, &jet);
+    b.SetBranches(s,trk, pf, gen, jet);
    
     for(int i = 0; i<trk->GetEntries(); i++){
       trk->GetEntry(i);
@@ -72,8 +72,8 @@ void ppToy(int job, int nJobs, std::vector< std::string > inputList){
   int evtIndex = 0;
   TFile * fin = TFile::Open(inputList.at(nFile).c_str(),"READ");
   TTree *trk, *pf, *gen, *jet;
-  setTrees(fin, &trk, &pf, &gen, &jet);
-  b.SetBranches(trk, pf, gen, jet);
+  setTrees(s,fin, &trk, &pf, &gen, &jet);
+  b.SetBranches(s,trk, pf, gen, jet);
   TDirectory * d = outF->mkdir("spectraPlots");
   d->cd();
 
@@ -113,8 +113,8 @@ void ppToy(int job, int nJobs, std::vector< std::string > inputList){
         fin->Close();
         fin = TFile::Open(inputList.at(nFile).c_str(),"READ");
         std::cout << "File: " << nFile << std::endl;
-        setTrees(fin, &trk, &pf, &gen, &jet);
-        b.SetBranches(trk, pf, gen, jet);
+        setTrees(s,fin, &trk, &pf, &gen, &jet);
+        b.SetBranches(s,trk, pf, gen, jet);
         d->cd(); 
       }
     }

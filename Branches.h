@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <iostream>
+#include "Settings.h"
 
 class Branches {
   public:
@@ -24,22 +25,24 @@ class Branches {
   std::vector< float > * genEta = 0;
   std::vector< float > * genPt = 0;
 
-  void  SetBranches(TTree * trk, TTree * pf, TTree * gen, TTree * jet);
+  void  SetBranches(Settings s, TTree * trk, TTree * pf, TTree * gen, TTree * jet);
   Branches();
   
   private:
 };
 
-void Branches::SetBranches(TTree * trk, TTree * pf, TTree * gen, TTree * jet){
+void Branches::SetBranches(Settings s, TTree * trk, TTree * pf, TTree * gen, TTree * jet){
   trk->SetBranchAddress("nTrk",&nTrk);
   trk->SetBranchAddress("trkPt",&trkPt);
   //trk->SetBranchAddress("trkEta",&trkEta);
   pf->SetBranchAddress("pfId",&pfId);
   pf->SetBranchAddress("pfPt",&pfPt);
   pf->SetBranchAddress("pfEta",&pfEta);
-  gen->SetBranchAddress("chg",&genChg);
-  gen->SetBranchAddress("eta",&genEta);
-  gen->SetBranchAddress("pt",&genPt);
+  if(s.isMC){
+    gen->SetBranchAddress("chg",&genChg);
+    gen->SetBranchAddress("eta",&genEta);
+    gen->SetBranchAddress("pt",&genPt);
+  }
   jet->SetBranchAddress("pthat",&pthat);
 }
 
