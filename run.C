@@ -2,7 +2,11 @@
 #include <fstream>
 #include <vector>
 #include <string>
-#include "ppToy.C"
+#include "include/Settings.h"
+
+void ppToy(int job, int totalJobs, std::vector< std::string > fileList){
+
+}
 
 int main(int argc, const char* argv[])
 {
@@ -32,7 +36,7 @@ int main(int argc, const char* argv[])
     {
       inFile >> buffer;
       if(inFile.eof()) break;
-      if(line%totalJobs==job) listOfFiles.push_back(buffer);
+      listOfFiles.push_back(buffer);
       line++;
     }
   }
