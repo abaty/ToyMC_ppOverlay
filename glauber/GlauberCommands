@@ -1,0 +1,4 @@
+
+gSystem->Load("libMathMore");
+.L runglauber_3.0.C+
+runAndSaveNtuple(100,"Pb","Pb",67.6,0.5,0.4)

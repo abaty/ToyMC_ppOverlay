@@ -8,7 +8,7 @@ otherParameters="fileList.txt 56"
 
 
 #do not edit anything below unless you know what you are doing
-g++ $MainCFile $(root-config --cflags --libs) -Wall -O2 -o "run.exe"
+g++ $MainCFile $(root-config --cflags --glibs) -lMathMore -Wall -O2 -o "run.exe"
 
 #grid certificate
 #gets unique user ID for this system, change to your own
