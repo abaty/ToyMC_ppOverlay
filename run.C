@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include "include/Settings.h"
+#include "glauber/runglauber_v3.0.C"
 
 void ppToy(int job, int totalJobs, std::vector< std::string > fileList){
 
