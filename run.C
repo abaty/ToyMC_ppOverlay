@@ -2,11 +2,35 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include "TFile.h"
+#include "TTree.h"
 #include "include/Settings.h"
-#include "glauber/runglauber_v3.0.C"
+#include "include/inputFile.h"
+//#include "glauber/runglauber_v3.0.C"
+#include <iostream>
+
 
 void ppToy(int job, int totalJobs, std::vector< std::string > fileList){
+  //TGlauberMC glauber = TGlauberMC("Pb","Pb",67.6,0.6);
+  //glauber.NextEvent();
+  //std::cout << glauber.GetNcoll() << std::endl;
+  //std::cout << glauber.GetB() << std::endl;
 
+  std::vector< int > pt;
+
+  TFile * outFile = TFile::Open(Form("output_%d",job),"recreate");
+  TTree * o = new TTree("t","t");  
+  o->Branch("pt",&pt);
+
+  InputFile input = InputFile(fileList.at(0));
+  for(int i = 0; i<input.GetEntries(); i++){
+    input.GetEntry(i);
+    std::cout << input.n << std::endl;
+  }
+ 
+  
+  outFile->Write();
+  outFile->Close();
 }
 
 int main(int argc, const char* argv[])
